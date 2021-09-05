@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:html_editor_enhanced/utils/utils.dart';
 import 'package:html_editor_enhanced/src/widgets/toolbar_widget.dart';
+
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'package:html_editor_enhanced/utils/shims/dart_ui.dart' as ui;
@@ -157,8 +158,7 @@ class _HtmlEditorWidgetWebState extends State<HtmlEditorWidget> {
     }
     summernoteCallbacks = summernoteCallbacks + '}';
     var darkCSS = '';
-    if ((Theme.of(widget.initBC).brightness == Brightness.dark ||
-            widget.htmlEditorOptions.darkMode == true) &&
+    if ((Theme.of(widget.initBC).brightness == Brightness.dark || widget.htmlEditorOptions.darkMode == true) &&
         widget.htmlEditorOptions.darkMode != false) {
       darkCSS =
           '<link href=\"assets/packages/html_editor_enhanced/assets/summernote-lite-dark.css\" rel=\"stylesheet\">';
@@ -407,8 +407,7 @@ class _HtmlEditorWidgetWebState extends State<HtmlEditorWidget> {
         $jsCallbacks
       </script>
     """;
-    var filePath =
-        'packages/html_editor_enhanced/assets/summernote-no-plugins.html';
+    var filePath = 'packages/html_editor_enhanced/assets/summernote-no-plugins.html';
     if (widget.htmlEditorOptions.filePath != null) {
       filePath = widget.htmlEditorOptions.filePath!;
     }
@@ -417,18 +416,16 @@ class _HtmlEditorWidgetWebState extends State<HtmlEditorWidget> {
         .replaceFirst('<!--darkCSS-->', darkCSS)
         .replaceFirst('<!--headString-->', headString)
         .replaceFirst('<!--summernoteScripts-->', summernoteScripts)
-        .replaceFirst('"jquery.min.js"',
-            '"assets/packages/html_editor_enhanced/assets/jquery.min.js"')
-        .replaceFirst('"summernote-lite.min.css"',
-            '"assets/packages/html_editor_enhanced/assets/summernote-lite.min.css"')
-        .replaceFirst('"summernote-lite.min.js"',
-            '"assets/packages/html_editor_enhanced/assets/summernote-lite.min.js"');
+        .replaceFirst('"jquery.min.js"', '"assets/packages/html_editor_enhanced/assets/jquery.min.js"')
+        .replaceFirst(
+            '"summernote-lite.min.css"', '"assets/packages/html_editor_enhanced/assets/summernote-lite.min.css"')
+        .replaceFirst(
+            '"summernote-lite.min.js"', '"assets/packages/html_editor_enhanced/assets/summernote-lite.min.js"');
     if (widget.callbacks != null) addJSListener(widget.callbacks!);
     final iframe = html.IFrameElement()
       ..width = MediaQuery.of(widget.initBC).size.width.toString() //'800'
-      ..height = widget.htmlEditorOptions.autoAdjustHeight
-          ? actualHeight.toString()
-          : widget.otherOptions.height.toString()
+      ..height =
+          widget.htmlEditorOptions.autoAdjustHeight ? actualHeight.toString() : widget.otherOptions.height.toString()
       // ignore: unsafe_html, necessary to load HTML string
       ..srcdoc = htmlString
       ..style.border = 'none'
@@ -453,29 +450,22 @@ class _HtmlEditorWidgetWebState extends State<HtmlEditorWidget> {
           if (data['type'] != null &&
               data['type'].contains('toDart: onChangeContent') &&
               data['view'] == createdViewId) {
-            if (widget.callbacks != null &&
-                widget.callbacks!.onChangeContent != null) {
+            if (widget.callbacks != null && widget.callbacks!.onChangeContent != null) {
               widget.callbacks!.onChangeContent!.call(data['contents']);
             }
-            if (widget.htmlEditorOptions.shouldEnsureVisible &&
-                Scrollable.of(context) != null) {
-              Scrollable.of(context)!.position.ensureVisible(
-                  context.findRenderObject()!,
-                  duration: const Duration(milliseconds: 100),
-                  curve: Curves.easeIn);
+            if (widget.htmlEditorOptions.shouldEnsureVisible && Scrollable.of(context) != null) {
+              Scrollable.of(context)!.position.ensureVisible(context.findRenderObject()!,
+                  duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
             }
           }
-          if (data['type'] != null &&
-              data['type'].contains('toDart: updateToolbar') &&
-              data['view'] == createdViewId) {
+          if (data['type'] != null && data['type'].contains('toDart: updateToolbar') && data['view'] == createdViewId) {
             if (widget.controller.toolbar != null) {
               widget.controller.toolbar!.updateToolbar(data);
             }
           }
         });
       });
-    ui.platformViewRegistry
-        .registerViewFactory(createdViewId, (int viewId) => iframe);
+    ui.platformViewRegistry.registerViewFactory(createdViewId, (int viewId) => iframe);
     setState(mounted, this.setState, () {
       summernoteInit = Future.value(true);
     });
@@ -484,13 +474,13 @@ class _HtmlEditorWidgetWebState extends State<HtmlEditorWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: widget.htmlEditorOptions.autoAdjustHeight
-          ? actualHeight
-          : widget.otherOptions.height,
+      height: widget.htmlEditorOptions.autoAdjustHeight ? actualHeight : widget.otherOptions.height,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          widget.htmlToolbarOptions.toolbarPosition ==
-                  ToolbarPosition.aboveEditor
+          widget.htmlToolbarOptions.toolbarPosition == ToolbarPosition.aboveEditor
               ? ToolbarWidget(
                   key: toolbarKey,
                   controller: widget.controller,
@@ -498,24 +488,24 @@ class _HtmlEditorWidgetWebState extends State<HtmlEditorWidget> {
                   callbacks: widget.callbacks)
               : Container(height: 0, width: 0),
           Expanded(
-              child: Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: FutureBuilder<bool>(
-                      future: summernoteInit,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return HtmlElementView(
-                            viewType: createdViewId,
-                          );
-                        } else {
-                          return Container(
-                              height: widget.htmlEditorOptions.autoAdjustHeight
-                                  ? actualHeight
-                                  : widget.otherOptions.height);
-                        }
-                      }))),
-          widget.htmlToolbarOptions.toolbarPosition ==
-                  ToolbarPosition.belowEditor
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: FutureBuilder<bool>(
+                future: summernoteInit,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return HtmlElementView(
+                      viewType: createdViewId,
+                    );
+                  } else {
+                    return Container(
+                        height: widget.htmlEditorOptions.autoAdjustHeight ? actualHeight : widget.otherOptions.height);
+                  }
+                },
+              ),
+            ),
+          ),
+          widget.htmlToolbarOptions.toolbarPosition == ToolbarPosition.belowEditor
               ? ToolbarWidget(
                   key: toolbarKey,
                   controller: widget.controller,
@@ -641,16 +631,12 @@ class _HtmlEditorWidgetWebState extends State<HtmlEditorWidget> {
   void addJSListener(Callbacks c) {
     html.window.onMessage.listen((event) {
       var data = json.decode(event.data);
-      if (data['type'] != null &&
-          data['type'].contains('toDart:') &&
-          data['view'] == createdViewId) {
-        if (data['type'].contains('htmlHeight') &&
-            widget.htmlEditorOptions.autoAdjustHeight) {
+      if (data['type'] != null && data['type'].contains('toDart:') && data['view'] == createdViewId) {
+        if (data['type'].contains('htmlHeight') && widget.htmlEditorOptions.autoAdjustHeight) {
           final docHeight = data['height'] ?? actualHeight;
           if ((docHeight != null && docHeight != actualHeight) && mounted) {
             setState(mounted, this.setState, () {
-              actualHeight =
-                  docHeight + (toolbarKey.currentContext?.size?.height ?? 0);
+              actualHeight = docHeight + (toolbarKey.currentContext?.size?.height ?? 0);
             });
           }
         }
